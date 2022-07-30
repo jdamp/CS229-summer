@@ -1,0 +1,16 @@
+\begin{answer}
+Write down the negative log-likelihood for a single example, using $\eta=\theta^Tx^{(i)}$:
+\begin{align*}
+    \ell &= - \log p(y^{(i)};x^{(i)},\theta) = -\log b(y^{(i)}) - \eta^T T(y^{(i)}) + a(\eta) \\
+         &= - \log\frac{1}{y!} - \theta^T x^{(i)} y^{(i)} + \exp(\theta^T x^{(i)})
+\end{align*}
+The partial derivative with respect to $\theta_j$ is given as
+\begin{align*}
+\frac{\partial\ell}{\partial\theta_j} = - x^{(i)}_j y^{(i)} + \exp(\theta^T x^{(i)}) x^{(i)}_j = - \left[y^{(i)} - \exp(\theta^T x^{(i)})\right]x^{(i)}_j
+\end{align*}
+For the stochastic gradient descent rule, we therefore obtain the following result:
+\begin{align*}
+    \theta_j &\mapsto \theta_j - \alpha\frac{\partial\ell}{\partial\theta_j} \\
+             &= \theta_j + \alpha\left[y^{(i)}-\exp(\theta^T x^{(i)})\right]x^{(i)}_j
+\end{align*}
+\end{answer}

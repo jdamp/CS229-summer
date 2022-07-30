@@ -1,0 +1,21 @@
+\begin{answer}
+\begin{align*}
+    \int \frac{\partial}{\partial \eta} p(y;\eta) \,dy 
+    &= \int \frac{\partial}{\partial \eta} p(y;\eta) \,dy
+    = \int \frac{\partial}{\partial \eta} b(y)\exp(\eta y - a(\eta)) \,dy \\
+    &= \int \underbrace{b(y) \exp(\eta^TT(y) - a(\eta))}_{p(y;\eta)} \left(y - \frac{\partial a(\eta)}{\partial\eta}\right) \,dy \\
+    &=\int p(y;\eta) \left(y - \frac{\partial a(\eta)}{\partial\eta}\right) \,dy 
+\end{align*}
+Since $p$ is an propability density function, the value of $\int p(y;\eta) \,dy$ must be equal to 1, independent of $\eta$.
+Therefore:
+\begin{align*}
+    \frac{\partial}{\partial \eta} \int p(y;\eta) \,dy  = 0.
+\end{align*}
+Using the equality given in the hint:
+\begin{align*}
+    &\frac{\partial}{\partial \eta} \int p(y;\eta) \,dy  =  \int\frac{\partial}{\partial \eta} p(y;\eta) \,dy 
+    \Leftrightarrow 0 = \int p(y;\eta) \left(y - \frac{\partial a(\eta)}{\partial\eta}\right) \,dy  \\
+    &\Rightarrow \int p(y;\eta) y \,dy = \int p(y;\eta) \frac{\partial a(\eta)}{\partial\eta} \,dy \\
+    &\Rightarrow \mathbb{E}\left[Y|\eta\right] = \frac{\partial a(\eta)}{\partial\eta} 
+\end{align*}
+\end{answer}

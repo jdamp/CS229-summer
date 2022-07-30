@@ -1,0 +1,51 @@
+\begin{answer}
+Let \(\mathcal{X}^1 = \{i=1,\ldots,n \mid y_i = 1\} \) and \(\mathcal{X}^0 = \{i=1,\ldots,n \mid y_i = 0\} \) and $n^1$, $n^0$ denote the number of elements in these sets.
+Then:
+\begin{align*}
+\ell(\phi, \mu_{0}, \mu_1, \Sigma) &= \sum_{i\in\mathcal{X}^1} p(x^{(i)} | 1; \mu_{0}, \mu_1, \Sigma) p(1;\phi) + \sum_{i\in\mathcal{X}^0} p(x^{(i)} | 0; \mu_{0}, \mu_1, \Sigma) p(0;\phi)    \\
+&= \frac{n}{2}\log\left((2\pi)^{d}\det\left({\Sigma^{-1}}\right)\right) + \biggl[ \sum_{i\in\mathcal{X}^1} \frac{1}{2}(x^{(i)}-\mu_{1})^T \Sigma^{-1} (x^{(i)}-\mu_{1}) + \log\phi + \\
+& \sum_{i\in\mathcal{X}^0} \frac{1}{2}(x^{(i)}-\mu_{0})^T \Sigma^{-1} (x^{(i)}-\mu_{0}) + \log\left(1-\phi\right)   \biggr]
+\end{align*}
+Find the optimal parameters by maximizing the log-likelihood $\ell$.
+First for $\phi$, neglecting factors independent on $\phi$:
+\begin{align*}
+    &\frac{\partial\ell}{\partial\phi} \propto \sum_{i\in\mathcal{X}^1}\frac{1}{\phi} - \sum_{i\in\mathcal{X}^0}\frac{1}{1-\phi} = n^1 \frac{1}{\phi} - n^0 \frac{1}{1-\phi} \overset{!}{=} 0 \\
+    &\Rightarrow \hat{\phi} = \frac{n^1}{n} = \frac{1}{\nexp} \sum_{i=1}^\nexp 1\{y^{(i)} = 1\}
+\end{align*}
+Then for $\mu^0$ (and analogously for $\mu_1$), making use of $\nabla_x x^T\Sigma x = 2\Sigma x$:
+\begin{align*}
+    &\nabla_{\mu_0}\ell = \frac{1}{2}\sum_{i\in\mathcal{X}^0} \nabla_{\mu_0}\left((x^{(i)}-\mu_{0})^T \Sigma^{-1} (x^{(i)}-\mu_{0})\right) = \sum_{i\in\mathcal{X}^0} \Sigma^{-1}(x^{(i)}-\mu_0) \overset{!}{=} 0 \\
+    &\Rightarrow \hat{\mu_0} = \frac{1}{n^0} \sum_{i\in\mathcal{X}^0} x^{(i)} = \frac{\sum_{i=1}^\nexp 1\{y^{(i)} = {0}\} x^{(i)}}{\sum_{i=1}^\nexp
+    1\{y^{(i)} = {0}\}} \\
+    &\Rightarrow \hat{\mu_1} = \frac{1}{n^1} \sum_{i\in\mathcal{X}^1} x^{(i)} = \frac{\sum_{i=1}^\nexp 1\{y^{(i)} = {1}\} x^{(i)}}{\sum_{i=1}^\nexp
+    1\{y^{(i)} = {1}\}}
+\end{align*}
+Last for $\Sigma$ we need to make use of the following identities from the script for a (symmetric) matrix $A$:
+\begin{align*}
+    \nabla_A \det A = \det A\cdot A^{-T} \\
+    \nabla_A \log \det A = A^{-T} \\
+    \Rightarrow \nabla_A\log\det A^{-1} = - A^{-T} = -A^{-1}
+\end{align*}
+In addition, we need to know $\nabla_A A^{-1}$:
+\begin{align*}
+    0 = \nabla_A \mathbb{I} = \nabla_A (A\cdot A^{-1}) =  A^{-1} + A \nabla_A A^{-1} \Rightarrow \nabla_A A^{-1} = - A^{-1} A^{-1}
+\end{align*}
+And finally, using the fact that the quadratic form is a scalar, and hence equivalent to its trace:
+\begin{align*}
+    \nabla_A z^T A^{-1} z = \nabla_A\mathrm{tr}(z^T A^{-1} z) = \nabla_A\mathrm{tr}(A^{-1} z\cdot z^T) =  - A^{-1} A^{-1} z\cdot z^T
+\end{align*}
+
+Then
+\begin{align*}
+    \nabla_\Sigma\ell = -\frac{n}{2}\Sigma^{-1} - \biggl[ \sum_{i\in\mathcal{X}^1} \Sigma^{-1}\Sigma^{-1} \frac{1}{2}(x^{(i)}-\mu_{1}) (x^{(i)}-\mu_{1})^T
+    & \sum_{i\in\mathcal{X}^0} \frac{1}{2}\Sigma^{-1}\Sigma^{-1} (x^{(i)}-\mu_{0}) (x^{(i)}-\mu_{0})^T  \biggr]
+\end{align*}
+Setting this equal to zero and multiplying twice from the left with $\Sigma$ yields:
+\begin{align*}
+    \hat{\Sigma} &= \frac{1}{n}\sum_{i\in\mathcal{X}^1} (x^{(i)}-\mu_{1}) (x^{(i)}-\mu_{1})^T
+     \sum_{i\in\mathcal{X}^0} (x^{(i)}-\mu_{0}) (x^{(i)}-\mu_{0})^T \\
+     &= \frac{1}{\nexp} \sum_{i=1}^\nexp (x^{(i)} - \mu_{y^{(i)}}) (x^{(i)} -
+     \mu_{y^{(i)}})^T
+\end{align*}
+\hfill\ensuremath{\square}
+\end{answer}

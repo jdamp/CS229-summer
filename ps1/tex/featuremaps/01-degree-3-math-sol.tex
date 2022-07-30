@@ -1,0 +1,11 @@
+\begin{answer}
+Objective function:
+\begin{equation*}
+    J(\theta) = \frac{1}{2}\sum_{i=1}^{n}(\theta^T \hat{x}^{(i)} - y^{(i)})^2
+\end{equation*}
+with the update rule:
+\begin{equation*}
+    \theta \mapsto \theta - \lambda \sum_{i=1}^{n}(\theta^T \hat{x}^{(i)} - y^{(i)}) \hat{x}^{(i)}
+\end{equation*}
+where $\lambda$ is the learning rate.
+\end{answer}

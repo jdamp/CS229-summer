@@ -1,0 +1,17 @@
+\begin{answer}
+GLM exponential family:
+\begin{equation*}
+    p(y;\eta) = b(y) \exp\left(\eta^T T(y) - a(\eta)\right)
+\end{equation*}
+Rewrite the Poisson PDF:
+\begin{align*}
+p(y; \lambda) = \frac{e^{-\lambda}\lambda^y}{y!} = \frac{1}{y!} \exp\left(-\lambda + y\log\lambda\right)
+\end{align*}
+Therefore:
+\begin{align*}
+    b(y) &= \frac{1}{y!} \\
+    \eta &= \log{\lambda} \\
+    T(y) &= y \\
+    a(\eta) &= \lambda = \exp(\eta)
+\end{align*}
+\end{answer}

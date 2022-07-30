@@ -1,0 +1,27 @@
+\begin{answer}
+Start by writing down the loss function for a single example:
+\begin{align*}
+    \ell(\theta) = - \log(p(y;\eta)) = - \log(b(y)) - \eta y + a(\eta),
+\end{align*}
+where $\eta=\theta^T x$.
+Use the chain rule to transform the derivative
+\begin{equation*}
+    \frac{\partial}{\partial\theta_i} = \frac{\partial\eta}{\partial\theta_i} \frac{\partial}{\partial\eta} = x_i \frac{\partial}{\partial\eta}
+\end{equation*}
+and calculate the second order partial derivatives:
+\begin{align*}
+    \frac{\partial^2 \ell(\theta)}{\partial\theta_i\partial\theta_j} =  \frac{\partial}{\partial\theta_j} \left(x_i \frac{\partial}{\partial\eta} \ell(\theta) \right)  =
+    \frac{\partial}{\partial\theta_j} \left(x_i \left[y + \frac{\partial a(\eta)}{\partial\eta}\right] \right)  = x_i x_j \frac{\partial^2 a(\eta)}{\partial\eta^2}
+\end{align*}
+Therefore, the Hessian can be written as 
+\begin{equation*}
+    H_\ell(\theta) = xx^T\frac{\partial^2 a(\eta)}{\partial\eta^2}.
+\end{equation*}
+To check that $H_\ell$ is PSD, the condition $z^T H_\ell z \geq 0$ has to be checked for all $z$:
+\begin{align*}
+z^T H_\ell(\theta) z &= \frac{\partial^2 a(\eta)}{\partial\eta^2} z^T (x^T x) z = \frac{\partial^2 a(\eta)}{\partial\eta^2} \sum_{i,j} z_i (x^T x)_{ij} z_j
+ = \frac{\partial^2 a(\eta)}{\partial\eta^2} \sum_{i,j} z_i x_i x_j z_j \\
+ &= \underbrace{\frac{\partial^2 a(\eta)}{\partial\eta^2}}_{\text{Variance} \geq 0} (z^T x)^2 \geq 0
+\end{align*}
+Therefore, any GLM model is convex in its model parameters.
+\end{answer}

@@ -1,0 +1,19 @@
+\begin{answer}
+Remember that
+\begin{equation}
+    \label{eq:var}
+    \mathrm{Var}(Y;\eta) = \mathbb{E}[Y^2;\eta] - (\mathbb{E}[Y;\eta])^2
+\end{equation}
+
+Use the same approach as in part (a):
+\begin{align*} 0 &= \int \frac{\partial^2}{\partial \eta^2} p(y;\eta) \,dy  = \int \frac{\partial}{\partial \eta} \left(y-\frac{\partial a(\eta)}{\partial\eta}\right)p(y;\eta) \,dy \\
+    &= \int \left( -\frac{\partial^2 a(\eta)}{\partial \eta^2} + \left(y-\frac{\partial a(\eta)}{\partial\eta}\right)^2 \right) p(y;\eta) \,dy \\
+    &= \int \left( -\frac{\partial^2 a(\eta)}{\partial \eta^2} + y^2 - 2 y \frac{\partial a(\eta)}{\partial\eta} + \left(\frac{\partial a(\eta)}{\partial\eta}\right)^2 \right) p(y;\eta) \,dy \\
+    &= -\frac{\partial^2 a(\eta)}{\partial \eta^2} +  \mathbb{E}[Y^2;\eta] - 2\frac{\partial a(\eta)}{\partial\eta} \mathbb{E}[Y;\eta] + \left(\frac{\partial a(\eta)}{\partial\eta}\right)^2 \\
+    &= -\frac{\partial^2 a(\eta)}{\partial \eta^2} +  \mathbb{E}[Y^2;\eta] - 2 (\mathbb{E}[Y;\eta])^2 + \left(\mathbb{E}[Y;\eta]\right)^2 \\
+\end{align*}
+Combining this result with equation \ref{eq:var} yields the desired result:
+\begin{equation*}
+    \mathrm{Var}(Y;\eta) = \mathbb{E}[Y^2;\eta] - (\mathbb{E}[Y;\eta])^2 = \frac{\partial^2 a(\eta)}{\partial \eta^2}.
+\end{equation*}
+\end{answer}

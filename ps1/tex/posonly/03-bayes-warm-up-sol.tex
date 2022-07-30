@@ -1,0 +1,14 @@
+\begin{answer}
+We know from the intial assumptions that
+\begin{align*}
+    p(y^{(i)}=1\mid t^{(i)} = 1, x^{(i)}) = \alpha \\
+    p(y^{(i)}=1\mid t^{(i)} = 0, x^{(i)}) = 0
+\end{align*}
+Using Bayes rule:
+\begin{align*}
+    &p(t^{(i)}=1\mid y^{(i)} = 1, x^{(i)}) = \frac{p(y^{(i)}=1\mid t^{(i)} = 1, x^{(i)}) \cdot p(t^{(i)}=1, x^{(i)})}{p(y^{(i)}=1, x^{(i)})} \\
+    &= \frac{p(y^{(i)}=1\mid t^{(i)} = 1, x^{(i)}) \cdot p(t^{(i)}=1, x^{(i)})}{p(y^{(i)}=1\mid t^{(i)}=1, x^{(i)}) \cdot p(t^{(i)}=1, x^{(i)}) + p(y^{(i)}=1\mid t^{(i)}=0, x^{(i)})\cdot p(t^{(i)}=1, x^{(i)})} \\
+    &= \frac{p(y^{(i)}=1\mid t^{(i)} = 1, x^{(i)})}{p(y^{(i)}=1\mid t^{i}=1, x^{(i)}) + p(y^{(i)}=1\mid t^{(i)}=0, x^{(i)})}  \\
+    &= \frac{\alpha}{\alpha} = 1 \\
+\end{align*}
+\end{answer}
