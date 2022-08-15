@@ -1,0 +1,32 @@
+\begin{answer}
+First plot the features of both datasets:
+\begin{figure}[h]
+    \begin{minipage}[t]{.49\linewidth}
+        \centering
+        \includegraphics*[width=\linewidth]{../src/stability/ds1_a.pdf}    
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{.49\linewidth}
+        \centering
+        \includegraphics*[width=\linewidth]{../src/stability/ds1_b.pdf}    
+    \end{minipage}
+    \caption{Scatterplot of the features of the Datasets A and B.}
+\end{figure}
+One can see that while dataset A is perfectly linearly seperable, this is not the case for dataset B.
+
+\begin{figure}[h]
+    \begin{minipage}[t]{.49\linewidth}
+        \centering
+        \includegraphics*[width=\linewidth]{../src/stability/gradients_a.pdf}    
+    \end{minipage}
+    \hfill        
+    \begin{minipage}[t]{.49\linewidth}
+        \centering
+        \includegraphics*[width=\linewidth]{../src/stability/gradients_b.pdf}    
+    \end{minipage}
+    \caption{Magnitude of the gradient $||\nabla\theta||$ for both datasets as a function of the number of iterations.}
+\end{figure}
+For dataset A, the gradients vanish quickly over many orders of magnitude, leading to the convergence criterion after about 22000 iterations.
+For dataset B however, the gradients stay in the same order of magnitude, therefore the convergence criterion is reached only much, much later.
+
+\end{answer}
