@@ -1,2 +1,41 @@
 \begin{answer}
+For $K:\Re^{\nexp} \times \Re^{\nexp} \rightarrow \Re,\, (x,z) \mapsto K(x,z)$ the following conditions have to be checked:
+\begin{itemize}
+    \item $K(x,z) = K(z, x) \forall x,z\in\Re^{\nexp}$
+    \item The square matrix $K$, with $K_{ij} = K(x_i, x_j)$ is positive semi-definite for any finite set $\{x_i | i=1,\ldots,n,\, x_i \in\Re^{\nexp}\}$.
+\end{itemize}
+\begin{enumerate}
+    \item[(a) - (d)] Consider the function $K(x,z)=a\cdot K_1(x,z)+b\cdot K_2(x,z)$. The resulting function is still symmetric, as any linear
+    combination of symmetric functions is still symmetric.
+     For the second criterion, check
+     \begin{align*}
+        z^T K z = \sum_{i,j} z_i K_{ij} z_j 
+        =  a\cdot \underbrace{\sum_{i,j} z_i K_{1,ij}z_j}_{\geq 0} + b \cdot \underbrace{\sum_{i,j} z_iK_{2,ij}z_j}_{\geq 0}
+     \end{align*}
+     $\Rightarrow K$ is always positive semidefinite as long as $a\geq 0$ and $b\geq 0$.
+     Therefore, (a) and (c) represent Kernels.
+     Counterexample for (b) and (d) are :
+     \begin{itemize}
+        \item[(b)] Chose $K_1$ such that $K_1(x_i,x_j) = \delta_{ij}$ and $K_2 = 2\cdot K_1$,
+         then the resulting function is not positive semidefinite.
+        \item[(d)] Chose $K_1(x_i,x_j) = \delta_{ij}$, then the resulting function is not positive semidefinite.
+     \end{itemize}
+     \item[(e)] Since $K_1$ and $K_2$ are Kernels, both have a corresponding feature map $\Phi: \Re^n \rightarrow \Re^p$ with 
+    $K_{i}(x,z)=\langle\Phi_{i}(x), \Phi_{i}(z)\rangle$.
+    Using this, we can try to find a feature map for the product of the two kernels:
+     \begin{align*}
+        K(x,z) = K_1(x,z) K_2(x,z) &= (\Phi_{1}^T(x) \Phi_{1}(z))   (\Phi_{2}^T(x) \Phi_{2}(z)) \\
+        &= \sum_{i,j} (\Phi_{1,i}^T(x) \Phi_{1,i}(z)) (\Phi_{2,j}^T(x) \Phi_{2,j}(z)) \\
+        &= \sum_{i,j} (\Phi_{1,i}^T(x) \Phi_{2,j}(z)) (\Phi_{1,i}^T(x) \Phi_{2,j}(z)) \\
+     \end{align*}
+     Define a new feature map $\Phi_3: \Re^d \Rightarrow \Re^{p^2}$, where $\Phi_3(x,z)_{i +p\cdot (j-1)}\equiv (\Phi_{1,i}^T(x) \Phi_{2,j}(z))$.
+     Then $K(x,z) = \langle\Phi_{3}(x), \Phi_{3}(z)\rangle$, so $K$ is indeed again a Kernel.
+     \item[(f)] Let $\Phi(x) = f(x)$. 
+     Then $K(x,z) = \langle\Phi(x), \Phi(z)\rangle =  f(x)f(z)$, therefore $K$ is a Kernel.
+     \item[(g)] Let $\Phi = \Phi_3 \circ \phi$, then $K$ is a Kernel with feature map $\Phi$.
+     \item[(h)] From (e) we know that a product of two kernels is again a kernel.
+      In addition, multiplication with a positive constant (c) and 
+     addition (a) preserve the Kernel status. Therefore,  a polynomial of kernels $K$ is still a Kernel.
+
+\end{enumerate}
 \end{answer}
