@@ -1,2 +1,14 @@
 \begin{answer}
+
+Using Bayes theorem:
+\begin{equation}
+    \label{eq:Bayes}
+    p(\theta|x,y) = \frac{p(y|x, \theta)p(\theta)}{p(y)}
+\end{equation}
+Insert equation~\ref{eq:Bayes} into the definition of the MAP estimator:
+\begin{align*}
+  \theta_{\text{MAP}} &= \arg\max_\theta p(\theta|x,y) = \arg\max_\theta \frac{p(y|x, \theta)p(\theta)}{p(y)} \\
+  &= \arg\max_\theta p(y|x, \theta)p(\theta)
+\end{align*}
+where the last step utilized that the denominator $p(y)$ does not depend on $\theta$.
 \end{answer}

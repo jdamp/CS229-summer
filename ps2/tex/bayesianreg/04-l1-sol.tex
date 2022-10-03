@@ -1,2 +1,17 @@
 \begin{answer}
+    Similar to (b)+(c):
+    \setcounter{equation}{0}
+    \begin{align}
+        \theta_{\text{MAP}}  &= \arg\min_\theta \left[-\log(\mathcal{N}(X\theta,\sigma^2))
+         - \sum_i\log\left(\frac{1}{2b}\exp\left(-\frac{|\theta_i|}{b}\right)\right)\right] \\
+         &= \arg\min_\theta \left[\frac{(\vec{y}-X\theta)^T\cdot(\vec{y}-X\theta)}{2\sigma^2}
+         + \sum_i\left(\frac{|\theta_i|}{b}\right)\right] \\
+         & = \arg\min_\theta \left[\frac{(\vec{y}-X\theta)^T\cdot(\vec{y}-X\theta)}{2\sigma^2}
+         + \frac{1}{b}||\theta||_1\right] \\
+         & = \arg\min_\theta \left[||X\theta-\vec{y}||^2_2
+         + \frac{2\sigma^2}{b}||\theta||_1\right]\label{eq:step4} \\
+         & = \arg\min_\theta J(\theta), \\
+    \end{align}
+    where $\gamma = \frac{2\sigma^2}{b}$.
+Since multiplying by a constant does not change the minima of the expression, the factor $2\sigma^2$ could be shifted to the second term in step~(\ref{eq:step4}).
 \end{answer}

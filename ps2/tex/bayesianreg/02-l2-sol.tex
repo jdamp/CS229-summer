@@ -1,2 +1,13 @@
 \begin{answer}
+Since the logarithm is a monotonic function, the following equation holds true for $\theta_{\text{MAP}}$:
+\begin{align*}
+    \theta_{\text{MAP}} = \arg\max_\theta p(y|x, \theta)p(\theta) = -\arg\min_\theta \log\left(p(y|x, \theta)p(\theta)\right)
+\end{align*}
+Therefore:
+\begin{align*}
+    \theta_{\text{MAP}} &= - \arg\min_\theta \log\left(p(y|x, \theta)\mathcal{N}(0,\eta^2I)\right) \\
+    & = \arg\min_\theta (-\log p(y|x, \theta) - \log(C\cdot e^{\frac{-\theta^T(\eta^2 I)^{-1}\theta}{2}})) \\
+    & = \arg\min_\theta (-\log p(y|x, \theta) + \underbrace{\frac{1}{2\eta^2}}_{=\lambda}||\theta||^2_2),
+  \end{align*}
+  where the normalizatuon constant $C$ could be dropped as it has no effect on the minima with respect to $\theta$.
 \end{answer}

@@ -1,2 +1,19 @@
 \begin{answer}
+The vector $\theta^{(i)}$ will be represented as a linear combination of the feature vectors $\phi(x^{(j)})$, i.e.
+\begin{equation*}
+    \theta^{(i)} = \sum_{j=1}^{n} \beta_j^{(i)}\phi(x^{(j)}),
+\end{equation*}
+where all information is stored in the coefficients $\beta_j^{(i)}$.
+For $i=0$, $\beta_j^{(0)}=0\,\forall j$.
+For $i>0$, the update rule for $\beta_j^{(i)}$ can be written as a function of the Mercer Kernel $K$, so there is no need to calculate
+the feature vectors $\phi$ explicitly:
+\begin{equation*}
+    \beta_j^{(i+1)} = \beta_j^{(i)} + \alpha \left( y^{(i)} - g\left(\sum_{k=1}^i \beta_k^{(i)}\cdot K\left(x^{(i)}, x^{(k)}\right)\right)\right)
+\end{equation*}
+Prediction can be made using
+\begin{align*}
+    h_{\theta^{(i)}}(x^{(i+1)}) = g(\theta^{(i)^T} \phi(x^{i+1}))
+     = g \left(\sum_{j=1}^{n} \beta_j^{(i)}{\phi(x^{(j)})^T} \phi(x^{(i+1)}) \right) \\
+     = g \left(\sum_{j=1}^{n} \beta_j^{(i)} K\left( x^{(j)}, x^{(i+1)}\right) \right)
+\end{align*}
 \end{answer}

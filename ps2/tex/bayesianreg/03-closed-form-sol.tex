@@ -1,2 +1,20 @@
 \begin{answer}
+Writing the linear model $y = \theta^Tx + \epsilon$ in matrix form yields $\vec{y} = X\theta + \vec{\epsilon}$, leading to the following expression for $p(y|x,\theta)$:
+\begin{equation}
+    p(\vec{y}|X,\theta) = \mathcal{N}(X\theta,\sigma^2)
+\end{equation}
+Therefore:
+\begin{align*}
+    \theta_{\text{MAP}}  &= \arg\min_\theta (-\log(\mathcal{N}(X\theta,\sigma^2)) + \lambda||\theta||^2_2) \\
+                         &= \arg\min_\theta \left(\frac{(\vec{y}-X\theta)^T\cdot(\vec{y}-X\theta)}{2\sigma^2} + \lambda||\theta||^2_2\right) \\
+                         &= \arg\min_\theta \left(\frac{(\vec{y}^T\vec{y} - \vec{y}^TX\theta-\theta^TX^T\vec{y}+\theta^TX^TX\theta}{2\sigma^2} + \lambda||\theta||^2_2\right) \\
+                         &:= \arg\min_\theta J(\theta)
+\end{align*}
+Taking the derivative of this expression with respect to theta to find the minimum:
+\begin{align*}
+    \nabla_\theta J(\theta) &= \frac{-2 \vec{y}^TX + 2\theta^TX^TX}{2\sigma^2} + 2 \lambda\theta^T = \frac{\theta^TX^TX-\vec{y}^TX}{\sigma^2} + 2 \lambda\theta^T \overset{!}{=} 0\\
+    &\Rightarrow  \theta_{\text{MAP}}^TX^TX +   2 \lambda\sigma^2\theta_{\text{MAP}}^T = \vec{y}^TX \\
+    &\Leftrightarrow  X^TX\theta_{\text{MAP}} +   2 \lambda\sigma^2\theta_{\text{MAP}} = X^T\vec{y} \\
+    &\Rightarrow \theta_{\text{MAP}} = \left(X^TX + \frac{\sigma^2}{\eta^2}\right)^{-1}X^T\vec{y}
+\end{align*}
 \end{answer}
