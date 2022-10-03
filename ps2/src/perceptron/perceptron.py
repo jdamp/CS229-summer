@@ -6,7 +6,7 @@ import numpy as np
 import util
 
 
-def initial_state():
+def initial_state(train_x):
     """Return the initial state for the perceptron.
 
     This function computes and then returns the initial state of the perceptron.
@@ -16,6 +16,8 @@ def initial_state():
     """
 
     # *** START CODE HERE ***
+    state = {'beta': np.zeros(train_x.shape[0]), 'x': train_x}
+    return state
     # *** END CODE HERE ***
 
 
@@ -33,10 +35,14 @@ def predict(state, kernel, x_i):
         Returns the prediction (i.e 0 or 1)
     """
     # *** START CODE HERE ***
+    beta = state['beta']
+    x_train = state['x']
+    k = kernel(x_train, x_i)
+    return sign(np.dot(beta, k))
     # *** END CODE HERE ***
 
 
-def update_state(state, kernel, learning_rate, x_i, y_i):
+def update_state(state, kernel, learning_rate, i, x_i, y_i):
     """Updates the state of the perceptron.
 
     Args:
@@ -47,6 +53,8 @@ def update_state(state, kernel, learning_rate, x_i, y_i):
         y_i: A 0 or 1 indicating the label for a single instance
     """
     # *** START CODE HERE ***
+    prediction = predict(state, kernel, x_i)
+    state['beta'][i] += learning_rate * (y_i - prediction)
     # *** END CODE HERE ***
 
 
@@ -76,9 +84,9 @@ def rbf_kernel(a, b, sigma=1):
         b: A vector
         sigma: The radius of the kernel
     """
-    distance = (a - b).dot(a - b)
+    distance = np.sum((a - b)**2, axis=1)
     scaled_distance = -distance / (2 * (sigma) ** 2)
-    return math.exp(scaled_distance)
+    return np.exp(scaled_distance)
 
 
 def train_perceptron(kernel_name, kernel, learning_rate):
@@ -96,10 +104,10 @@ def train_perceptron(kernel_name, kernel, learning_rate):
     """
     train_x, train_y = util.load_csv('train.csv')
 
-    state = initial_state()
+    state = initial_state(train_x)
 
-    for x_i, y_i in zip(train_x, train_y):
-        update_state(state, kernel, learning_rate, x_i, y_i)
+    for i, (x_i, y_i) in enumerate(zip(train_x, train_y)):
+        update_state(state, kernel, learning_rate, i, x_i, y_i)
 
     test_x, test_y = util.load_csv('test.csv')
 
