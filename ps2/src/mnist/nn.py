@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
+import json
 
 def softmax(x):
     """
@@ -21,6 +22,10 @@ def softmax(x):
         A 2d numpy float array containing the softmax results of shape batch_size x number_of_classes
     """
     # *** START CODE HERE ***
+    # avoid overflow in large exponentials and utilize the fact that softmax(z + c) = softmax(z)
+    c = np.max(x, axis=1).reshape(-1, 1)
+    exp = np.exp(x - c)
+    return exp/np.sum(exp, axis=1).reshape(-1, 1)
     # *** END CODE HERE ***
 
 def sigmoid(x):
@@ -34,6 +39,7 @@ def sigmoid(x):
         A numpy float array containing the sigmoid results
     """
     # *** START CODE HERE ***
+    return 1 / (1 + np.exp(-x))
     # *** END CODE HERE ***
 
 def get_initial_params(input_size, num_hidden, num_output):
@@ -49,7 +55,7 @@ def get_initial_params(input_size, num_hidden, num_output):
     W2 is the weight matrix for the output layers
     b2 is the bias vector for the output layer
 
-    As specified in the PDF, weight matricesshould be initialized with a random normal distribution.
+    As specified in the PDF, weight matrices should be initialized with a random normal distribution.
     Bias vectors should be initialized with zero.
     
     Args:
@@ -62,6 +68,12 @@ def get_initial_params(input_size, num_hidden, num_output):
     """
 
     # *** START CODE HERE ***
+    rng = np.random.default_rng()
+    W1 = rng.normal(size=(input_size, num_hidden))
+    b1 = np.zeros((1, num_hidden))
+    W2 = rng.normal(size=(num_hidden, num_output))
+    b2 = np.zeros((1, num_output))
+    return dict(W1=W1, b1=b1, W2=W2, b2=b2)
     # *** END CODE HERE ***
 
 def forward_prop(data, labels, params):
@@ -83,6 +95,12 @@ def forward_prop(data, labels, params):
             3. The average loss for these data elements
     """
     # *** START CODE HERE ***
+    hidden = sigmoid(np.dot(data, params['W1']) + params['b1'])
+    out = softmax(np.dot(hidden, params['W2']) + params['b2'])
+    #loss = -np.mean(labels*np.log(out))
+    loss = np.sum(-labels*np.log(out)) / data.shape[0]
+
+    return hidden, out, loss
     # *** END CODE HERE ***
 
 def backward_prop(data, labels, params, forward_prop_func):
@@ -106,6 +124,8 @@ def backward_prop(data, labels, params, forward_prop_func):
             W1, W2, b1, and b2
     """
     # *** START CODE HERE ***
+    # Just return regularized loss with regularization factor set to 0
+    return backward_prop_regularized(data, labels, params, forward_prop_func, reg=0)
     # *** END CODE HERE ***
 
 
@@ -131,6 +151,16 @@ def backward_prop_regularized(data, labels, params, forward_prop_func, reg):
             W1, W2, b1, and b2
     """
     # *** START CODE HERE ***
+    n_data = data.shape[0]
+    W1, W2, b1, b2 = params["W1"], params["W2"], params["b1"], params["b2"]
+    hidden, out, loss = forward_prop_func(data, labels, params)
+
+    dW2 = np.dot(hidden.T, (out - labels)) / n_data + 2 * reg * W2
+    db2 = np.mean(labels - out, axis=0)
+    dW1 = np.dot(data.T, np.dot((out - labels), W2.T) * hidden * (1 - hidden))/n_data + 2 * reg * W1
+    db1 = np.mean(np.dot((labels - out), W2.T) * hidden * (1 - hidden), axis=0)
+
+    return dict(W1=dW1, b1=db1, W2=dW2, b2=db2)
     # *** END CODE HERE ***
 
 def gradient_descent_epoch(train_data, train_labels, learning_rate, batch_size, params, forward_prop_func, backward_prop_func):
@@ -153,6 +183,14 @@ def gradient_descent_epoch(train_data, train_labels, learning_rate, batch_size, 
     """
 
     # *** START CODE HERE ***
+    num_batches = train_data.shape[0]//batch_size
+    for batch in range(num_batches):
+        batch_slice = np.r_[batch * batch_size: (batch + 1) * batch_size]
+        batch_data = train_data[batch_slice]
+        batch_labels = train_labels[batch_slice]
+        gradients = backward_prop_func(batch_data, batch_labels, params, forward_prop_func)
+        for par_name in params:
+            params[par_name] = params[par_name] - learning_rate * gradients[par_name]
     # *** END CODE HERE ***
 
     # This function does not return anything
@@ -176,6 +214,7 @@ def nn_train(
             learning_rate, batch_size, params, forward_prop_func, backward_prop_func)
 
         h, output, cost = forward_prop_func(train_data, train_labels, params)
+        print(f"Epoch: {epoch}, loss: {cost:.3f}")
         cost_train.append(cost)
         accuracy_train.append(compute_accuracy(output,train_labels))
         h, output, cost = forward_prop_func(dev_data, dev_labels, params)
@@ -220,7 +259,10 @@ def run_train_test(name, all_data, all_labels, backward_prop_func, num_epochs):
     ax1.plot(t, cost_dev, 'b', label='dev')
     ax1.set_xlabel('epochs')
     ax1.set_ylabel('loss')
-    ax1.set_title('With Regularization')
+    if name == "regularized":
+        ax1.set_title('With Regularization')
+    else:
+        ax1.set_title("Without Regularization")
     ax1.legend()
 
     ax2.plot(t, accuracy_train,'r', label='train')
@@ -228,11 +270,14 @@ def run_train_test(name, all_data, all_labels, backward_prop_func, num_epochs):
     ax2.set_xlabel('epochs')
     ax2.set_ylabel('accuracy')
     ax2.legend()
-
-    fig.savefig('./' + name + '.pdf')
+    plt.tight_layout()
+    fig.savefig('./' + name + '.pdf', bbox_inches="tight")
 
     accuracy = nn_test(all_data['test'], all_labels['test'], params)
     print('For model %s, got accuracy: %f' % (name, accuracy))
+    with open(f"params_{name}.json", "w") as parfile:
+        json.dump({key: arr.tolist() for key, arr in params.items()}, parfile)
+
 
 def main():
     parser = argparse.ArgumentParser(description='Train a nn model.')
@@ -274,7 +319,7 @@ def main():
     }
     
     run_train_test('baseline', all_data, all_labels, backward_prop, args.num_epochs)
-    run_train_test('regularized', all_data, all_labels, 
+    run_train_test('regularized', all_data, all_labels,
         lambda a, b, c, d: backward_prop_regularized(a, b, c, d, reg=0.0001),
         args.num_epochs)
 
