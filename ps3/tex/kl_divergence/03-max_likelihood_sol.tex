@@ -1,2 +1,13 @@
 \begin{answer}
+The following manipulations use the fact that $\hat{P}(x)$ is independent on $\theta$, and therefore does not affect the minimization:
+\begin{align*}
+    \arg\min_\theta \KL(\hat{P}\|P_\theta) 
+    &= \arg\min_\theta \sum_{j=1}^n\hat{P}(x_j) \log\frac{\hat{P}(x_j)}{P_\theta(x_j)}\\
+    &= \arg\min_\theta \sum_{j=1}^n\hat{P}(x_j) \left(\log\hat{P}(x_j)- \log{P_\theta(x_j)} \right)\\
+    &= \arg\min_\theta \sum_{j=1}^n- \hat{P}(x_j)\log{P_\theta(x_j)} \\
+    &=  \arg\max_\theta \sum_{j=1}^n\hat{P}(x_j)\log{P_\theta(x_j)} \\
+    &=  \arg\max_\theta \sum_{j=1}^n\log{P_\theta(x_j)} \\
+\end{align*}    
+\hfill \ensuremath{\Box}
 \end{answer}
+

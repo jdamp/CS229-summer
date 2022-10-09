@@ -1,2 +1,18 @@
+
 \begin{answer}
+For the logarithm function the following relation holds true $\forall x\geq 1$, $x\in\mathbb{R}$:
+\begin{equation}
+    \label{eq:log-law}
+\log{x} \leq x - 1,
+\end{equation}
+since $\log{1} = 1 - 1 = 0$ for $x=1$ and $\frac{\mathrm{d}}{\mathrm{d}x}\log{x} = \frac{1}{x} \leq \frac{\mathrm{d}}{\mathrm{d}x} x = 1$.
+The case of "=" is achieved if and only if $x=1$.  
+Using equation~\ref{eq:log-law}, the Kullback-Leibler divergence can be rewritten as:
+\begin{align*}
+    \KL(P||Q) &= \sum_{x\in\cal X} P(x)\log\frac{P(x)}{Q(x)} = - \sum_{x\in\cal X} P(x)\log\frac{Q(x)}{P(x)} \geq - \sum_{x\in\cal X} P(x)\left(\frac{Q(x)}{P(x)} - 1\right) \\
+              &= \sum_{x\in\cal X} P(x) - \sum_{x\in\cal X} Q(x) = 0,
+\end{align*}
+where the last equality holds true since $P$ and $Q$ are normalized probability distributions over $\mathcal{X}$.
+The special case of "=" in equation~\ref{eq:log-law} is achieved when $x=1$, meaning $P(x)=Q(x)$.
+\hfill \ensuremath{\Box}
 \end{answer}

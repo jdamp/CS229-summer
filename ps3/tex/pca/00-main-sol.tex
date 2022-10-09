@@ -1,2 +1,21 @@
 \begin{answer}
+First, it is easy to see that
+\[
+f_u(x) = \arg \min_{v\in {\cal V}} ||x-v||^2 = \arg \min_{\alpha\in {\mathbb{R}}} ||x-\alpha u||^2
+\]
+is solved by $\alpha_{\text{min}}= x^Tu $:
+\[
+\frac{\mathrm{d}}{\mathrm{d}\alpha} ||x-\alpha u||^2 = -2x^Tu + 2\alpha \underbrace{u^Tu}_{=1} \overset{!}{=}0
+\Rightarrow \alpha_{\text{min}} = x^T u
+ \]
+Using this, the mean squared error between projected and original points can be written as
+\begin{align*}
+    \arg \min_{u:u^Tu=1} &\sum_{i=1}^\nexp \|x^{(i)}-f_u(x^{(i)})\|_2^2 
+    = \arg \min_{u:u^Tu=1} \sum_{i=1}^\nexp \|x^{(i)}-\alpha_{\text{min}}^{(i)}u\|_2^2  \\
+    &= \arg \min_{u:u^Tu=1} \sum_{i=1}^\nexp \left((x^{(i)})^2- 2\alpha_{\text{min}}^{(i)} (x^{(i)})^T u + (\alpha_{\text{min}}^{(i)}u)^2\right) \\
+    &= \arg \min_{u:u^Tu=1} \sum_{i=1}^\nexp \left(\underbrace{(x^{(i)})^2}_{\text{constant}}- 2(\alpha_{\text{min}}^{(i)})^2 + (\alpha_{\text{min}}^{(i)})^2\underbrace{u^2}_{=1}\right) \\
+    &= \arg \min_{u:u^Tu=1} \sum_{i=1}^\nexp \left(- 2(\alpha_{\text{min}}^{(i)})^2 + \alpha_{\text{min}}^2\right) \\
+    &= \arg \max_{u:u^Tu=1} \sum_{i=1}^\nexp \alpha_{\text{min}}^2 = \arg \max_{u:u^Tu=1} \sum_{i=1}^\nexp ((x^{(i)})^T u)^2
+\end{align*}
+which is exactly the definition of the first principal component from the script.
 \end{answer}
