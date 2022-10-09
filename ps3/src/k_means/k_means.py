@@ -2,6 +2,8 @@ from __future__ import division, print_function
 import argparse
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use("TkAgg")
 import numpy as np
 import os
 import random
@@ -26,7 +28,10 @@ def init_centroids(num_clusters, image):
     """
 
     # *** START YOUR CODE ***
-    # raise NotImplementedError('init_centroids function not implemented')
+    rng = np.random.default_rng()
+    height_indices = rng.integers(0, image.shape[0], size=num_clusters)
+    width_indices = rng.integers(0, image.shape[1], size=num_clusters)
+    centroids_init = image[height_indices, width_indices, :]
     # *** END YOUR CODE ***
 
     return centroids_init
@@ -52,17 +57,31 @@ def update_centroids(centroids, image, max_iter=30, print_every=10):
     new_centroids : nparray
         Updated centroids
     """
-
-    # *** START YOUR CODE ***
-    # raise NotImplementedError('update_centroids function not implemented')
-        # Usually expected to converge long before `max_iter` iterations
-                # Initialize `dist` vector to keep track of distance to every centroid
-                # Loop over all centroids and store distances in `dist`
-                # Find closest centroid and update `new_centroids`
+    # *** START YOUR CODE
+    num_cluster = centroids.shape[0]
+    # Usually expected to converge long before `max_iter` iterations
+    for iter in range(max_iter):
+        # Initialize `dist` vector to keep track of distance to every centroid
+        dist = np.zeros((num_cluster, image.shape[0], image.shape[1]))
+        # Loop over all centroids and store distances in `dist`
+        for j, centroid in enumerate(centroids):
+            dist[j] = np.linalg.norm(image - centroid, axis=2)
+        # Find closest centroid and update `new_centroids`
+        closest = np.argmin(dist, axis=0)
         # Update `new_centroids`
+        new_centroids = np.zeros((num_cluster, 3))
+        for j in range(num_cluster):
+            matched_pixels = image[closest == j]
+            new_centroids[j] = np.mean(matched_pixels, axis=0)
+            # print loss
+        if (iter + 1) % print_every == 0:
+            loss = (image - new_centroids[closest.squeeze()]) ** 2
+            loss = np.sum(loss)
+            print(f'loss: {loss:.2f}')
+        centroids = new_centroids
     # *** END YOUR CODE ***
 
-    return new_centroids
+    return centroids
 
 
 def update_image(image, centroids):
@@ -84,10 +103,14 @@ def update_image(image, centroids):
     """
 
     # *** START YOUR CODE ***
-    # raise NotImplementedError('update_image function not implemented')
-            # Initialize `dist` vector to keep track of distance to every centroid
-            # Loop over all centroids and store distances in `dist`
-            # Find closest centroid and update pixel value in `image`
+    dist = np.zeros((centroids.shape[0], image.shape[0], image.shape[1]))
+    for j, centroid in enumerate(centroids):
+        dist[j] = np.linalg.norm(image - centroid, axis=2)
+        # Find closest centroid and update `new_centroids`
+    closest = np.argmin(dist, axis=0)
+
+    # Update image`
+    image = centroids[closest]
     # *** END YOUR CODE ***
 
     return image
@@ -104,7 +127,7 @@ def main(args):
     figure_idx = 0
 
     # Load small image
-    image = np.copy(mpimg.imread(image_path_small))
+    image = np.copy(mpimg.imread(image_path_small)) / 255
     print('[INFO] Loaded small image with shape: {}'.format(np.shape(image)))
     plt.figure(figure_idx)
     figure_idx += 1
@@ -125,7 +148,7 @@ def main(args):
     centroids = update_centroids(centroids_init, image, max_iter, print_every)
 
     # Load large image
-    image = mpimg.imread(image_path_large)
+    image = mpimg.imread(image_path_large).copy() / 255
     image.setflags(write=1)
     print('[INFO] Loaded large image with shape: {}'.format(np.shape(image)))
     plt.figure(figure_idx)
