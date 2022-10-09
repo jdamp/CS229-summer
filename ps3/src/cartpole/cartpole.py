@@ -3,14 +3,19 @@ CS 229 Machine Learning
 Question: Reinforcement Learning - The Inverted Pendulum
 """
 from __future__ import division, print_function
-from env import CartPole, Physics
+
+import os
+import shutil
+
+import imageio
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import lfilter
 
-from collections import defaultdict
-from abc import ABC, abstractmethod
+from env import CartPole, Physics
 
+matplotlib.use('TkAgg')
 """
 Parts of the code (cart and pole dynamics, and the state
 discretization) are inspired from code available at the RL repository
@@ -86,66 +91,7 @@ performance is reasonable.
 """
 
 
-class MDPBase(ABC):
-    def __init__(self, pars):
-        self._pars = pars
-        self.name = None
-
-    @property
-    def pars(self):
-        return self.pars
-
-    @pars.setter
-    def pars(self, new_pars):
-        assert self._pars.shape == new_pars.shape
-        self._pars = new_pars
-
-    def __call__(self, *args):
-        return self._pars[args]
-
-    def __repr__(self):
-        return self.name
-
-class RewardFunction(MDPBase):
-    """
-    Represents the Reward funtion R: SxA -> IR
-    """
-    def __init__(self, num_states, num_actions):
-        pars = np.zeros((num_states, num_actions))
-        super().__init__(pars)
-        self.name = "RewardFunction"
-
-
-class StateTransitions(MDPBase):
-    """
-    Represents the states transition functions P_(i_state)
-    """
-    def __init__(self, num_states):
-        probs = np.ones((num_states, num_states)) * (1./num_states)
-        super().__init__(probs)
-        self.name = "StateTransition"
-
-    def __call__(self, state):
-        state_probs = state[0]
-        rng = np
-        return
-
-
-
-class ValueFunction(MDPBase):
-    """
-    represents the value function
-    """
-    def __init__(self, num_states):
-        rng = np.random.default_rng()
-        values = 0.1 * rng.random(num_states)
-        super().__init__(values)
-        self.name = "ValueFunction"
-
-    def value_iteration(self):
-        pass
-
-def initialize_mdp_data(num_states):
+def initialize_mdp_data(num_states, rng):
     """
     Return a variable that contains all the parameters/state you need for your MDP.
     Feel free to use whatever data type is most convenient for you (custom classes, tuples, dicts, etc)
@@ -162,17 +108,20 @@ def initialize_mdp_data(num_states):
 
     Returns: The initial MDP parameters
     """
-
     # *** START CODE HERE ***
+    num_actions = 2
+    # Since num_states & num_actions are small it is fine to use 3D arrays to represent their counts
+    # and corresponding probabilities
     mdp_data = {
-        "reward": RewardFunction(num_states, 2),
-        "transitions": StateTransitions(num_states),
-        "value": ValueFunction(num_states),
-        "transition_counts": np.zeros((num_states, num_states))
+        "reward": np.zeros(num_states),
+        "transition_probs": np.ones((num_states, num_actions, num_states)) * 1./num_states,
+        "value": rng.random(num_states) * 0.1,
+        "reward_counts": np.zeros(num_states),
+        "transition_counts": np.zeros((num_states, num_actions, num_states))
     }
     return mdp_data
 
-def choose_action(state, mdp_data):
+def choose_action(state, mdp_data, rng):
     """
     Choose the next action (0 or 1) that is optimal according to your current
     mdp_data. When there is no optimal action, return a random action.
@@ -186,6 +135,19 @@ def choose_action(state, mdp_data):
     """
 
     # *** START CODE HERE ***
+    ps0 = mdp_data["transition_probs"][state, 0, :]  # transitition probs from state s using action a=0
+    ps1 = mdp_data["transition_probs"][state, 1, :] # transitition probs from state s using action a=1
+
+    # Calculate second term of Bellman equations (sum(s' in states) P_sa(s')V(s'))
+    # and chose whatever increases the expected reward more as the optimal action
+    v0 = ps0.dot(mdp_data["value"])
+    v1 = ps1.dot(mdp_data["value"])
+    if v0 > v1:
+        return 0
+    elif v0 < v1:
+        return 1
+    else:
+        return rng.choice([0, 1])
     # *** END CODE HERE ***
 
 def update_mdp_transition_counts_reward_counts(mdp_data, state, action, new_state, reward):
@@ -209,6 +171,8 @@ def update_mdp_transition_counts_reward_counts(mdp_data, state, action, new_stat
     """
 
     # *** START CODE HERE ***
+    mdp_data['transition_counts'][state, action, new_state] += 1
+    mdp_data["reward_counts"][new_state] += reward
     # *** END CODE HERE ***
 
     # This function does not return anything
@@ -230,8 +194,14 @@ def update_mdp_transition_probs_reward(mdp_data):
         Nothing
 
     """
-
     # *** START CODE HERE ***
+    total_transitions = mdp_data['transition_counts'].sum(axis=2)[:, :, np.newaxis]
+    new_probs = mdp_data['transition_counts']/total_transitions
+    mdp_data['transition_probs'] = np.where(total_transitions > 0, new_probs, mdp_data['transition_probs'])
+
+    new_state_counts = mdp_data['transition_counts'].sum(axis=(0, 1))
+    new_reward = mdp_data["reward_counts"] / new_state_counts
+    mdp_data["reward"] = np.where(new_state_counts > 0, new_reward, mdp_data["reward"])
     # *** END CODE HERE ***
 
     # This function does not return anything
@@ -259,7 +229,44 @@ def update_mdp_value(mdp_data, tolerance, gamma):
     """
 
     # *** START CODE HERE ***
+    num_iterations = 0
+    max_diff = 100 * tolerance  # just ensure that first iteration is run
+    while max_diff > tolerance:
+        new_value = mdp_data["reward"] + gamma * np.max(mdp_data["transition_probs"].dot(mdp_data["value"]), axis=1)
+        max_diff = np.max(np.abs(new_value - mdp_data["value"]))
+        mdp_data["value"] = new_value
+        num_iterations += 1
     # *** END CODE HERE ***
+    return num_iterations == 1
+
+
+def plot_trial(mdp_data, rng):
+    """Plot a trial given a learned MDP and policy, return as a gif file."""
+    time = 0
+    cart_pole = CartPole(Physics())
+    state_tuple = (0., 0., 0., 0.)
+    state = cart_pole.get_state(state_tuple)
+    os.makedirs('frames', exist_ok=True)  # contain frames
+    cart_pole.plot_cart(state_tuple, time)
+    files = []
+    # simulate a trial
+    while True:
+        time += 1
+        action = choose_action(state, mdp_data, rng)
+        state_tuple = cart_pole.simulate(action, state_tuple)
+        new_state = cart_pole.get_state(state_tuple)
+        cart_pole.plot_cart(state_tuple, time)
+        files.append(f'frame{time}.png')
+        if new_state == mdp_data['reward'].shape[0] - 1:
+            break
+        state = new_state
+    # create gif file
+    with imageio.get_writer('simulation.gif', mode='I') as writer:
+        for filename in files:
+            image = imageio.imread(f'frames/{filename}')
+            writer.append_data(image)
+    # remove redundancy
+    shutil.rmtree("frames")
 
 def main():
     # Simulation parameters
@@ -284,6 +291,9 @@ def main():
     # You should reach convergence well before this
     max_failures = 500
 
+    # numpy random number generator
+    rng = np.random.default_rng()
+
     # Initialize a cart pole
     cart_pole = CartPole(Physics())
 
@@ -298,7 +308,7 @@ def main():
     # if min_trial_length_to_start_display == 0 or display_started == 1:
     #     cart_pole.show_cart(state_tuple, pause_time)
 
-    mdp_data = initialize_mdp_data(NUM_STATES)
+    mdp_data = initialize_mdp_data(NUM_STATES, rng)
 
     # This is the criterion to end the simulation.
     # You should change it to terminate when the previous
@@ -310,7 +320,7 @@ def main():
     consecutive_no_learning_trials = 0
     while consecutive_no_learning_trials < NO_LEARNING_THRESHOLD:
 
-        action = choose_action(state, mdp_data)
+        action = choose_action(state, mdp_data, rng)
 
         # Get the next state by simulating the dynamics
         state_tuple = cart_pole.simulate(action, state_tuple)
@@ -379,6 +389,8 @@ def main():
     plt.xlabel('Num failures')
     plt.ylabel('Log of num steps to failure')
     plt.savefig('./control.pdf')
+
+    plot_trial(mdp_data, rng)
 
 if __name__ == '__main__':
     main()
