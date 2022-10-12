@@ -1,2 +1,31 @@
 \begin{answer}
+To calculate the gradient of the likelihood, the derivative of the Gaussian $g'$ is required:
+\begin{equation}
+    \frac{\mathrm{d}}{\mathrm{d}x}g'(x) = \frac{1}{\sqrt{2\pi}} \frac{\mathrm{d}}{\mathrm{d}x} e^{-\frac{1}{2}x^2} 
+    = - \frac{1}{\sqrt{2\pi}} x e^{-\frac{1}{2}x^2} = -x g'(x)
+\end{equation}
+We also make use of the result from the lecture script for the Jacobian of the determinant($\nabla_W\log(|W|) = (W^{-1})^T$).
+\begin{align*}
+    \frac{\partial}{\partial W_{kl}} \ell(W) 
+    &= \sum_{i=1}^\nexp\left((W^{-1})^T_{kl} + \sum_{j=1}^\di \frac{1}{g'(w_j^Tx^{(i)})}\cdot (-w_j^Tx^{(i)} g'(w_j^Tx^{(i)})) \cdot\delta_{kj} x_l^{(i)}\right) \\
+    &= \sum_{i=1}^\nexp\left((W^{-1})^T_{kl} - w_k^Tx^{(i)} x_l^{i}\right)
+\end{align*}
+Therefore, in vectorized form
+\begin{align*}
+    \nabla_W \ell(W) &= \sum_{i=1}^\nexp\left((W^{-1})^T - (W\cdot x^{(i)}) \cdot x^{(i)^T}\right) \\
+    &= n (W^{-1})^T - WX^TX,    
+\end{align*}
+where the matrix $X$ is defined via its columns $X_{.,i} = x^{(i)}$.
+Setting $\nabla_W \ell(W)$ equal to zero yields the following equation, assuming $X^TX$ is invertible:
+\begin{equation}
+    \label{eq:sol}
+    W^T W = (\frac{1}{n}X^TX)^{-1}
+\end{equation}
+This is ambiguous, which can be seen as follows:
+Assume that $W_0$ is a solution of equation~\ref{eq:sol}, and let $R\in O(d)$ be an arbitrary orthogonal matrix, meaning $R^TR = \mathbb{I}$.
+It is easy to see that $W_1 = R\cdot W_0$ is also a solution:
+\begin{equation*}
+    W_1^T W_1 = W_1^T R^T R W_1 = W_1^T W_1 = (\frac{1}{n}X^TX)^{-1}
+\end{equation*}
+Therefore, the ICA is unable to recover the original sources assuming Gaussian distributions.
 \end{answer}

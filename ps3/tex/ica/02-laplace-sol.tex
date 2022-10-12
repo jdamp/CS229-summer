@@ -1,2 +1,23 @@
 \begin{answer}
+    Let $x = W\cdot s$ describe a single example. The log likelihood for a Laplacian source is given as 
+\begin{align*}
+    \log L &= \sum_{j=1}^d \log{(f_{\mathcal{L}}(w^T_j x))} + \log{|W|} \\
+           &= \sum_{j=1}^d (\log{\frac{1}{2}} - |w^T_j x|)+ \log{|W|} \\
+           &= d\log{\frac{1}{2}} - \sum_{j=1}^d |w^T_j x|+ \log{|W|}
+\end{align*}
+The derivative of $|y|$ for $y\in\mathbb{R}$ is $\mathrm{sign}(y)$ for $y\neq 0$.
+For simplicity, define the vectorized signum function as follows:
+ $\mathrm{vsign}: \mathbb{R}^n\rightarrow \{-1, 1\}^n, x\mapsto (\mathrm{sign}(x_1), \ldots, \mathrm{sign}(x_n))$.
+ With this, the partial derivatives can be calculated as:
+ \begin{align*}
+    \frac{\partial}{\partial w_{kl}}\log L 
+    &= - \sum_{j=1}^d \frac{\partial}{\partial w_{kl }}(|w^T_j x|) + (W^{-1})^T_{kl} \\
+    &= -\mathrm{sign}(w^T_j x) \delta_{jk} x_l  + (W^{-1})^T_{kl} \\
+    &= -\mathrm{sign}(w^T_k x) x_l  + (W^{-1})^T_{kl} \\
+ \end{align*}
+ Therefore we can derive the updated rule:
+ \begin{align*}
+    \nabla \log L  = -\mathrm{vsign}(Wx)\cdot x^T + (W^{-1})^T \\
+    \Rightarrow W \mapsto W + \alpha \left(-\mathrm{vsign}(Wx)\cdot x^T + (W^{-1})^T\right)
+ \end{align*}
 \end{answer}
