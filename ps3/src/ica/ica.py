@@ -18,6 +18,10 @@ def update_W(W, x, learning_rate):
     """
 
     # *** START CODE HERE ***
+    W_inv = np.linalg.inv(W)
+    x_vec = x[:, np.newaxis]
+    updated_W = W + learning_rate * (- np.sign(W@x_vec) @ x_vec.T + W_inv.T)
+
     # *** END CODE HERE ***
 
     return updated_W
@@ -38,6 +42,7 @@ def unmix(X, W):
     S = np.zeros(X.shape)
 
     # *** START CODE HERE ***
+    S = X @ W.T
     # *** END CODE HERE ***
 
     return S
